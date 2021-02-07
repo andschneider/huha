@@ -1,0 +1,64 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 07a3458e163fa0d427910b89a98a3182bd06e9d934f5ae71665f9917892836b5
+
+name:           huha
+version:        0.0.1
+synopsis:       A bare bones static site generator
+description:    Please see the README on GitHub at <https://github.com/andschneider/huha#readme>
+category:       Web
+homepage:       https://github.com/andschneider/huha#readme
+bug-reports:    https://github.com/andschneider/huha/issues
+author:         Andrew Schneider
+maintainer:     example@example.com
+copyright:      2021 Andrew Schneider
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/andschneider/huha
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_huha
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable huha-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_huha
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , huha
+  default-language: Haskell2010
+
+test-suite huha-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_huha
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , huha
+  default-language: Haskell2010
