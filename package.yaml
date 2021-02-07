@@ -21,6 +21,8 @@ description:         Please see the README on GitHub at <https://github.com/ands
 
 dependencies:
 - base >= 4.7 && < 5
+- text
+- commonmark
 
 library:
   source-dirs: src
