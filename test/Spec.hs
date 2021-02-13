@@ -1,2 +1,6 @@
-main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+module Main where
+
+import Test.Hspec
+import ParserSpec
+
+main = hspec spec
