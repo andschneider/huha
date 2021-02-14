@@ -2,5 +2,8 @@ module Main where
 
 import Parser
 
-main :: IO ()
-main = convertFile "README.md"
+main :: IO [()]
+main = do
+  putStrLn "Enter the directory name: "
+  dir <- getLine
+  renderDir dir

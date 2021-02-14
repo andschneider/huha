@@ -25,6 +25,8 @@ dependencies:
 - commonmark
 - commonmark-extensions
 - hspec
+- directory
+- filepath
 
 library:
   source-dirs: src

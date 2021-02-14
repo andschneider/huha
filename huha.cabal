@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0cedeba887f7458e18c4ff783c84186ce362d7188502b4e2becc06978a0bce12
+-- hash: adf64a84aa17b1bd4f05ccf5603f15551c1be1341693dfde7df2166d6fa6a169
 
 name:           huha
 version:        0.0.1
@@ -38,6 +38,8 @@ library
       base >=4.7 && <5
     , commonmark
     , commonmark-extensions
+    , directory
+    , filepath
     , hspec
     , text
   default-language: Haskell2010
@@ -53,6 +55,8 @@ executable huha-exe
       base >=4.7 && <5
     , commonmark
     , commonmark-extensions
+    , directory
+    , filepath
     , hspec
     , huha
     , text
@@ -71,6 +75,8 @@ test-suite huha-test
       base >=4.7 && <5
     , commonmark
     , commonmark-extensions
+    , directory
+    , filepath
     , hspec
     , huha
     , text
