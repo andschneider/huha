@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: adf64a84aa17b1bd4f05ccf5603f15551c1be1341693dfde7df2166d6fa6a169
+-- hash: a54686732b6c85d1234400c9a8ed9b838a3d08a2cc9d48e42a99a4a79f36e760
 
 name:           huha
 version:        0.0.1
@@ -29,6 +29,7 @@ source-repository head
 
 library
   exposed-modules:
+      Notes
       Parser
   other-modules:
       Paths_huha
@@ -50,7 +51,7 @@ executable huha-exe
       Paths_huha
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -XOverloadedStrings
   build-depends:
       base >=4.7 && <5
     , commonmark
@@ -66,6 +67,7 @@ test-suite huha-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      NotesSpec
       ParserSpec
       Paths_huha
   hs-source-dirs:

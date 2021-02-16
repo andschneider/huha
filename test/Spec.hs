@@ -1,6 +1,7 @@
 module Main where
 
 import Test.Hspec
+import NotesSpec
 import ParserSpec
 
-main = hspec spec
+main = hspec notesSpec

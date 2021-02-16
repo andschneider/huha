@@ -83,3 +83,30 @@ Use `:tabc[lose] {filename}` to close the current tab and all its windows.
 | previous      | `gT`           | `:tabp[revious]` |
 
 ------
+
+## 20200816 - [[linux]] [[networking]] - set static ip with netplan
+
+Put the following file at `/etc/netplan`.
+
+```yaml
+# 01-static-ip.yaml
+network:
+  version: 2
+  ethernets:
+    eth0:
+      addresses:
+        - 192.168.1.186/24
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [192.168.1.199, 1.1.1.1]
+```
+
+Note that the IP address ends with `/24`.
+
+To apply changes:
+
+```bash
+sudo netplan apply
+```
+
+------

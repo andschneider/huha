@@ -1,9 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- :set -XOverloadedStrings
+
 module Notes
   ( getLines,
     checkLine,
     printLines,
+    parseHeader,
+    parseTags,
   )
 where
 
@@ -19,7 +23,25 @@ getLines fileName = do
 
 checkLine :: [TI.Text] -> SplitPattern -> [TI.Text]
 checkLine lines pattern =
-  Prelude.filter (\line -> line == pattern) lines
+  --  Prelude.filter (\line -> line == pattern) lines
+  Prelude.filter (\line -> (isPrefixOf pattern line)) lines
+
+-- TODO parse all fields into record type?
+
+parseHeader :: Text -> Text
+parseHeader t =
+  let sections = T.splitOn " - " t
+   in sections !! 1 -- only return tags for now
+
+-- | parseTags takes a string of tags from a header and removes the
+--  surrounding characters for each tag. It returns a clean list of
+--  all the tags in the header.
+--  e.g. "[[linux]] [[networking]]" will become ["linux","networking"]
+--  e.g. "[[zsh]]" will become ["zsh"]
+parseTags :: Text -> [Text]
+parseTags t =
+  let splits = T.splitOn " " t
+   in Prelude.map (\tags -> T.dropWhileEnd (== ']') (T.dropWhile (== '[') tags)) splits
 
 printLines :: [TI.Text] -> IO ()
 printLines lines = do
