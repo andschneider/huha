@@ -27,6 +27,9 @@ dependencies:
 - hspec
 - directory
 - filepath
+- stache
+- aeson
+- megaparsec
 
 library:
   source-dirs: src

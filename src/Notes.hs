@@ -14,6 +14,7 @@ where
 import Data.Text as T
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
+import Data.List.NonEmpty (nub)
 
 type SplitPattern = TI.Text
 
@@ -42,6 +43,10 @@ parseTags :: Text -> [Text]
 parseTags t =
   let splits = T.splitOn " " t
    in Prelude.map (\tags -> T.dropWhileEnd (== ']') (T.dropWhile (== '[') tags)) splits
+
+--cleanTags :: [[Text]] -> [Text]
+--cleanTags t =
+  --  let joined = sort (nub (Prelude.concat parsedTags))
 
 printLines :: [TI.Text] -> IO ()
 printLines lines = do
