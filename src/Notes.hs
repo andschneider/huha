@@ -8,17 +8,24 @@ module Notes
     printLines,
     parseHeader,
     parseTags,
+    writeNotes,
   )
 where
 
+import Data.Aeson
+import Data.List.NonEmpty (nub)
 import Data.Text as T
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
-import Data.List.NonEmpty (nub)
+import Data.Text.Internal.Lazy as TIL
+import qualified Data.Text.Lazy.IO as TLIO
+import System.FilePath (joinPath)
+import Text.Megaparsec
+import Text.Mustache
 
 type SplitPattern = TI.Text
 
-getLines :: FilePath -> IO [Text]
+getLines :: FilePath -> IO [T.Text]
 getLines fileName = do
   fmap T.lines (TIO.readFile fileName)
 
@@ -29,7 +36,7 @@ checkLine lines pattern =
 
 -- TODO parse all fields into record type?
 
-parseHeader :: Text -> Text
+parseHeader :: T.Text -> T.Text
 parseHeader t =
   let sections = T.splitOn " - " t
    in sections !! 1 -- only return tags for now
@@ -39,35 +46,26 @@ parseHeader t =
 --  all the tags in the header.
 --  e.g. "[[linux]] [[networking]]" will become ["linux","networking"]
 --  e.g. "[[zsh]]" will become ["zsh"]
-parseTags :: Text -> [Text]
+parseTags :: T.Text -> [T.Text]
 parseTags t =
   let splits = T.splitOn " " t
    in Prelude.map (\tags -> T.dropWhileEnd (== ']') (T.dropWhile (== '[') tags)) splits
 
 --cleanTags :: [[Text]] -> [Text]
 --cleanTags t =
-  --  let joined = sort (nub (Prelude.concat parsedTags))
+--  let joined = sort (nub (Prelude.concat parsedTags))
 
 printLines :: [TI.Text] -> IO ()
 printLines lines = do
   mapM_ TIO.putStrLn lines
 
---getCounts :: T.Text -> (Int, Int, Int)
---getCounts input = (charCount, wordCount, lineCount)
---  where
---    charCount = T.length input
---    wordCount = (Prelude.length . T.words) input
---    lineCount = (Prelude.length . T.lines) input
---
---countsText :: (Int, Int, Int) -> T.Text
---countsText (cc, wc, lc) =
---  T.pack
---    ( Prelude.unwords
---        [ "chars: ",
---          show cc,
---          " words: ",
---          show wc,
---          " lines: ",
---          show lc
---        ]
---    )
+writeNotes :: FilePath -> [T.Text] -> TIL.Text -> IO ()
+writeNotes dir tags content = do
+  template <- compileMustacheDir "tags" $ joinPath [dir, "layouts"]
+  TLIO.writeFile
+    (joinPath [dir, "static/tags.html"])
+    $ renderMustache template $
+      object
+        [ "tags" .= tags,
+          "content" .= content
+        ]

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tags</title>
+</head>
+<body>
+<div class="tags">
+    <article>
+        <a href="/notes/docker.html">docker</a>
+        <a href="/notes/linux.html">linux</a>
+        <a href="/notes/networking.html">networking</a>
+        <a href="/notes/vim.html">vim</a>
+        <a href="/notes/zsh.html">zsh</a>
+    </article>
+    <h1>notes</h1>
+<hr />
+<h2>20201104 - [[linux]] - man page sections</h2>
+<p>Often a number is seen following a command, e.g. <code>ping (8)</code>. This corresponds
+to the man page section it belongs to.</p>
+<p>The following are copied directly from running <code>man man</code>:</p>
+<pre><code class="language-text">1   Executable programs or shell commands
+2   System calls (functions provided by the kernel)
+3   Library calls (functions within program libraries)
+4   Special files (usually found in /dev)
+5   File formats and conventions, e.g. /etc/passwd
+6   Games
+7   Miscellaneous (including macro packages and conventions), e.g. man(7), groff(7)
+8   System administration commands (usually only for root)
+9   Kernel routines [Non standard
+</code></pre>
+<hr />
+<h2>20201029 - [[zsh]] - clear zsh history</h2>
+<p>Erase all zsh history, leaving the command &quot;erase_history&quot;.</p>
+<pre><code class="language-bash">function erase_history { local HISTSIZE=0; }
+erase_history
+</code></pre>
+<p><a href="https://unix.stackexchange.com/a/544815">source</a></p>
+<hr />
+<h2>20201021 - [[docker]] - format container ls output</h2>
+<p>For a simpler output from <code>docker container ls</code>, use the <code>--format</code> flag.</p>
+<p>For example:</p>
+<pre><code class="language-bash">docker container list --format &quot;table {{.Names}}\t{{.Status}}\t{{.Image}}&quot;
+
+# add as alias
+alias dlss='docker container list --format &quot;table {{.Names}}\t{{.Status}}\t{{.Image}}&quot;'
+</code></pre>
+<p>Available options:</p>
+<ul>
+<li>Command
+</li>
+<li>CreatedAt
+</li>
+<li>ID
+</li>
+<li>Image
+</li>
+<li>Labels
+</li>
+<li>LocalVolumes
+</li>
+<li>Mounts
+</li>
+<li>Names
+</li>
+<li>Networks
+</li>
+<li>Ports
+</li>
+<li>RunningFor
+</li>
+<li>Size
+</li>
+<li>Status
+</li>
+</ul>
+<p>Run <code>docker container ls --format='{{json .}}'</code> to get the above options.</p>
+<p><a href="https://docs.docker.com/config/formatting/">source</a></p>
+<hr />
+<h2>20201010 - [[vim]] - using tabs</h2>
+<p>Use <code>:tabe[dit] {filename}</code> to create a new tab.
+Open current window into new tab <code>&lt;C-w&gt;T</code>, if there is more than one window.
+Use <code>:tabc[lose] {filename}</code> to close the current tab and all its windows.</p>
+<p>| Switch to tab | normal command | ex command       |
+|---------------|----------------|------------------|
+| next          | <code>gt</code>           | <code>:tabn[ext]</code>     |
+| previous      | <code>gT</code>           | <code>:tabp[revious]</code> |</p>
+<hr />
+<h2>20200816 - [[linux]] [[networking]] - set static ip with netplan</h2>
+<p>Put the following file at <code>/etc/netplan</code>.</p>
+<pre><code class="language-yaml"># 01-static-ip.yaml
+network:
+  version: 2
+  ethernets:
+    eth0:
+      addresses:
+        - 192.168.1.186/24
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [192.168.1.199, 1.1.1.1]
+</code></pre>
+<p>Note that the IP address ends with <code>/24</code>.</p>
+<p>To apply changes:</p>
+<pre><code class="language-bash">sudo netplan apply
+</code></pre>
+<hr />
+
+</div>
+</body>
+</html>

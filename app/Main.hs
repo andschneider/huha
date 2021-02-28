@@ -4,10 +4,11 @@ module Main where
 
 import Data.Aeson
 import Data.List (nub, sort)
-import Data.Text
+import qualified Data.Text as T
 import qualified Data.Text.Lazy.IO as TIO
 import Notes
 import Parser
+import System.FilePath (joinPath)
 import Text.Megaparsec
 import Text.Mustache
 
@@ -15,10 +16,16 @@ main :: IO ()
 main = do
   --  putStrLn "Enter the directory name: "
   --  dir <- getLine
-  --  renderDir dir
-  let fileName = "notes-cs.md"
+  let dir = "./example"
+  let content = joinPath [dir, "content/"]
+
+  let fileName = joinPath [content, "notes-cs.md"]
   let pattern = "##"
   --  let pattern = "------"
+
+  raw <- getFile fileName
+  let html = convertFile raw
+  --  print html
 
   -- TODO merge into one function?
   ls <- getLines fileName
@@ -27,14 +34,9 @@ main = do
   let parsedTags = Prelude.map parseTags tags
   let sortedUnique = sort (nub (Prelude.concat parsedTags))
 
---  printLines headers
---  print tags
---  printLines tags
---  mapM_ printLines parsedTags
+  --  printLines headers
+  --  print tags
+  --  printLines tags
+  --  mapM_ printLines parsedTags
 
-  tagTemplate <- compileMustacheFile "example/layouts/tags.mustache"
-  --  print tagTemplate
-  TIO.putStr $
-    renderMustache tagTemplate $
-      object
-        ["tags" .= sortedUnique]
+  writeNotes dir sortedUnique html
