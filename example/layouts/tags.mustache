@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tags</title>
+</head>
+<body>
+<div class="tags">
+    <article>
+        {{#tags}}
+        <a href="/notes/{{.}}.html">{{.}}</a>
+        {{/tags}}
+    </article>
+    {{& content}}
+</div>
+</body>
+</html>
