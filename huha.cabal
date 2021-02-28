@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d7da674290800f4379c4b8ddb6adf77bf135ec9ad2c7253c36e3d84bc6e4e4ea
+-- hash: c58994fe0ac324141a0d32431e6c486a09a8dc898fcda1645020f53fb79a1631
 
 name:           huha
-version:        0.0.1
+version:        0.0.2
 synopsis:       A bare bones static site generator
 description:    Please see the README on GitHub at <https://github.com/andschneider/huha#readme>
 category:       Web

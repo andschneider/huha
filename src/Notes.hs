@@ -63,7 +63,7 @@ writeNotes :: FilePath -> [T.Text] -> TIL.Text -> IO ()
 writeNotes dir tags content = do
   template <- compileMustacheDir "tags" $ joinPath [dir, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "static/tags.html"])
+    (joinPath [dir, "public/static/", "tags.html"])
     $ renderMustache template $
       object
         [ "tags" .= tags,
