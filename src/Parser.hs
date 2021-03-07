@@ -8,6 +8,10 @@ module Parser
 where
 
 import Commonmark
+import Commonmark.Extensions.AutoIdentifiers (autoIdentifiersSpec)
+import Commonmark.Extensions.Autolink (autolinkSpec)
+import Commonmark.Extensions.ImplicitHeadingReferences (implicitHeadingReferencesSpec)
+import Commonmark.Extensions.PipeTable (pipeTableSpec)
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
 import Data.Text.Lazy as TL
@@ -21,15 +25,16 @@ getFile f = do
   res <- TIO.readFile f
   convertHtml res
 
+convertHtml :: TI.Text -> IO (Either ParseError (Html ()))
+convertHtml x = do
+  let spec = autoIdentifiersSpec <> defaultSyntaxSpec <> autolinkSpec <> pipeTableSpec <> implicitHeadingReferencesSpec
+  parseCommonmarkWith spec (tokenize "source" x)
+
 convertFile :: Either ParseError (Html ()) -> TL.Text
 convertFile h =
   case h of
     Left e -> error (show e)
     Right (ht :: Html ()) -> renderHtml ht
-
-convertHtml :: TI.Text -> IO (Either ParseError (Html ()))
-convertHtml x = do
-  parseCommonmarkWith defaultSyntaxSpec (tokenize "source" x)
 
 findMarkdownFiles :: FilePath -> IO [FilePath]
 findMarkdownFiles f = do
