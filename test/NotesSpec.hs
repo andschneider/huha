@@ -4,11 +4,15 @@ module NotesSpec (notesSpec) where
 
 import Notes
 import Test.Hspec
+import Notes (Header)
 
 notesSpec :: Spec
 notesSpec = describe "notes parsing" $ do
   let pattern = "## "
-  let headerLine = "## 20201104 - [[linux]] - man page sections"
+  let headerLine = "## 20201104 - [[linux]] [[test]] - man page sections"
+  let tags = parseTags headerLine
+--  let parsedHeader = Header {rawHeader = headerLine, date = "20201104", tags = tags, title = "man page sections"}
+  let parsedHeader = parseHeader headerLine
 
   it "extract single header line" $ do
     checkLine ["## asdf", "nope", "# nope"] pattern `shouldBe` ["## asdf"]
@@ -17,7 +21,9 @@ notesSpec = describe "notes parsing" $ do
     checkLine ["## asdf", "nope", "## yep"] pattern `shouldBe` ["## asdf", "## yep"]
 
   it "parse header - wip" $ do
-    parseHeader headerLine `shouldBe` "[[linux]]"
+    let a = parseHeader headerLine 
+    print a
+    a `shouldBe` parsedHeader
 
   it "extract single tag" $ do
     parseTags "[[linux]]" `shouldBe` ["linux"]

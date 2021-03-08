@@ -25,18 +25,15 @@ main = do
 
   raw <- getFile fileName
   let html = convertFile raw
-  --  print html
+--    print html
 
   -- TODO merge into one function?
-  ls <- getLines fileName
-  let headers = checkLine ls pattern
-  let tags = Prelude.map parseHeader headers -- TODO parse full header
-  let parsedTags = Prelude.map parseTags tags
-  let sortedUnique = sort (nub (Prelude.concat parsedTags))
+  fileLines <- getLines fileName
+  let headers = Prelude.map parseHeader (checkLine fileLines pattern)
+  let sortedUnique = getUniqueTags headers
 
-  --  printLines headers
-  --  print tags
-  --  printLines tags
-  --  mapM_ printLines parsedTags
+  print headers
+  print "---"
+  print sortedUnique
 
   writeNotes dir sortedUnique html
