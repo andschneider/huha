@@ -2,6 +2,7 @@
 
 module Parser
   ( convertFile,
+    convertLines,
     getFile,
     findMarkdownFiles,
   )
@@ -12,6 +13,7 @@ import Commonmark.Extensions.AutoIdentifiers (autoIdentifiersSpec)
 import Commonmark.Extensions.Autolink (autolinkSpec)
 import Commonmark.Extensions.ImplicitHeadingReferences (implicitHeadingReferencesSpec)
 import Commonmark.Extensions.PipeTable (pipeTableSpec)
+import qualified Data.Text as T
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
 import Data.Text.Lazy as TL
@@ -29,6 +31,10 @@ convertHtml :: TI.Text -> IO (Either ParseError (Html ()))
 convertHtml x = do
   let spec = autoIdentifiersSpec <> defaultSyntaxSpec <> autolinkSpec <> pipeTableSpec <> implicitHeadingReferencesSpec
   parseCommonmarkWith spec (tokenize "source" x)
+
+convertLines :: [TI.Text] -> IO (Either ParseError (Html ()))
+convertLines x = do
+  convertHtml (T.unlines x)  -- merge lines with "\n" character
 
 convertFile :: Either ParseError (Html ()) -> TL.Text
 convertFile h =

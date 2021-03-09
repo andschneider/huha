@@ -1,10 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- :set -XOverloadedStrings
-
 module Notes
   ( getLines,
-    checkLine,
+    filterLines,
     printLines,
     parseHeader,
     parseTags,
@@ -13,16 +11,21 @@ module Notes
     writeBlankNote,
     Header,
     tags,
+    note,
+    extractUntil,
+    createNotes,
+    appendNote,
   )
 where
 
 import Data.Aeson
-import Data.List (nub, sort)
+import Data.List (groupBy, nub, sort)
 import qualified Data.Text as T
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
 import Data.Text.Internal.Lazy as TIL
 import qualified Data.Text.Lazy.IO as TLIO
+import Parser
 import System.FilePath (joinPath)
 import Text.Megaparsec
 import Text.Mustache
@@ -41,20 +44,42 @@ data Header = Header
   }
   deriving (Show, Eq)
 
-data Note = Note Header RawNote
+data Note = Note
+  { header :: Header,
+    note :: RawNote
+  }
+  deriving (Show)
 
---createNotes :: [TI.Text] -> SplitPattern -> [Note]
---createNotes lines pattern =
---  headers = checkLine lines pattern
---  map parseTags headers
---
+createNotes :: [T.Text] -> SplitPattern -> [Note]
+createNotes ls pattern =
+  -- use tail on the list to ignore the header in the file
+  let extracted = extractUntil (\x -> not $ T.isPrefixOf pattern x) ls
+   in map linesToNote extracted
+
+linesToNote :: [T.Text] -> Note
+linesToNote ls =
+  let h = parseHeader (ls !! 1)
+      rawNote = ls
+   in Note {header = h, note = rawNote}
+
+-- based on: https://stackoverflow.com/a/50068932
+extractUntil :: (a -> Bool) -> [a] -> [[a]]
+extractUntil _ [] = []
+extractUntil p ls =
+  let (ls', ls'') = span p ls
+      remaining = dropWhile (not . p) ls''
+   in case ls' of
+        [] -> extractUntil p remaining
+        xs' -> xs' : extractUntil p ls''
+
+-- | read in a file and return a list of all the lines of the file.
 getLines :: FilePath -> IO [T.Text]
 getLines fileName = do
   fmap T.lines (TIO.readFile fileName)
 
-checkLine :: [TI.Text] -> SplitPattern -> [TI.Text]
-checkLine lines pattern =
-  --  Prelude.filter (\line -> line == pattern) lines
+-- | filter based on the prefix of a line.
+filterLines :: [TI.Text] -> SplitPattern -> [TI.Text]
+filterLines lines pattern =
   Prelude.filter (\line -> (T.isPrefixOf pattern line)) lines
 
 -- | parseHeader splits the header into 3 sections:
@@ -86,22 +111,16 @@ parseDate d =
 parseTags :: T.Text -> [T.Text]
 parseTags t =
   let splits = T.splitOn " " t
-   in Prelude.map (\tags -> T.dropWhileEnd (== ']') (T.dropWhile (== '[') tags)) splits
+   in Prelude.map (\tag -> T.dropWhileEnd (== ']') (T.dropWhile (== '[') tag)) splits
 
+-- | extract all unique tags from a list of headers.
 getUniqueTags :: [Header] -> [T.Text]
 getUniqueTags headers =
   let tagsOnly = Prelude.map Notes.tags headers
       allTags = Prelude.concat tagsOnly
-    in sort (nub allTags)
+   in sort (nub allTags)
 
---cleanTags :: [[Text]] -> [Text]
---cleanTags t =
---  let joined = sort (nub (Prelude.concat parsedTags))
-
-printLines :: [TI.Text] -> IO ()
-printLines lines = do
-  mapM_ TIO.putStrLn lines
-
+-- | write all of the tags and converted markdown to a html file
 writeNotes :: FilePath -> [T.Text] -> TIL.Text -> IO ()
 writeNotes dir tags content = do
   template <- compileMustacheDir "tags" $ joinPath [dir, "layouts"]
@@ -113,13 +132,23 @@ writeNotes dir tags content = do
           "content" .= content
         ]
 
--- TODO append note to tag file
--- appendNote :: FilePath -> Note -> IO()
--- appendNote dir note = do
---
+-- | append a note to its specific note file, based on its tag
+appendNote :: FilePath -> Note -> IO ()
+appendNote dir n = do
+  html <- convertLines (note n)
+  let fn = T.unpack (mconcat [(tags (header n) !! 0), ".html"])  -- TODO only using the first tag, should be all of them
+      render = convertFile html
+   in TLIO.appendFile (joinPath [dir, "public/static/notes/", fn]) render
 
+-- | create a blank html file based on the name of a tag.
+--  the file should be appended to later with actual content.
 writeBlankNote :: FilePath -> T.Text -> IO ()
 writeBlankNote dir tag = do
-  let fn =  T.unpack (mconcat [tag, ".html"])
-      content =  mconcat ["<h1>", tag, "</h1>"]
-    in TIO.writeFile (joinPath [dir, "public/static/notes/", fn]) content
+  let fn = T.unpack (mconcat [tag, ".html"])
+      content = mconcat ["<h1>", tag, "</h1>", "\n", "\n"]
+   in TIO.writeFile (joinPath [dir, "public/static/notes/", fn]) content
+-- TODO is this the right save location?
+
+printLines :: [TI.Text] -> IO ()
+printLines lines = do
+  mapM_ TIO.putStrLn lines

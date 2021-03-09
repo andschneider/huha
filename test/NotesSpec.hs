@@ -15,10 +15,10 @@ notesSpec = describe "notes parsing" $ do
   let parsedHeader = parseHeader headerLine
 
   it "extract single header line" $ do
-    checkLine ["## asdf", "nope", "# nope"] pattern `shouldBe` ["## asdf"]
+    filterLines ["## asdf", "nope", "# nope"] pattern `shouldBe` ["## asdf"]
 
   it "extract multiple header lines" $ do
-    checkLine ["## asdf", "nope", "## yep"] pattern `shouldBe` ["## asdf", "## yep"]
+    filterLines ["## asdf", "nope", "## yep"] pattern `shouldBe` ["## asdf", "## yep"]
 
   it "parse header - wip" $ do
     let a = parseHeader headerLine 

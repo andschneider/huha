@@ -29,7 +29,7 @@ main = do
 
   -- TODO merge into one function?
   fileLines <- getLines fileName
-  let headers = Prelude.map parseHeader (checkLine fileLines pattern)
+  let headers = Prelude.map parseHeader (filterLines fileLines pattern)
   let sortedUnique = getUniqueTags headers
   mapM (writeBlankNote dir) sortedUnique
 
@@ -37,4 +37,14 @@ main = do
   -- print "---"
   print sortedUnique
 
+  -- TODO kinda janky. better way to ignore until first pattern match?
+  let removeFirstTwo = tail (tail fileLines)
+  let test = extractUntil (\x -> not $ T.isPrefixOf "------" x) removeFirstTwo
+  print test
+
+  -- TODO combine these
+  let yeet = createNotes removeFirstTwo "------"
+  print yeet
+
+  mapM (appendNote dir) yeet
   writeNotes dir sortedUnique html
