@@ -10,6 +10,7 @@ module Notes
     parseTags,
     writeNotes,
     getUniqueTags,
+    writeBlankNote,
     Header,
     tags,
   )
@@ -17,7 +18,7 @@ where
 
 import Data.Aeson
 import Data.List (nub, sort)
-import Data.Text as T
+import qualified Data.Text as T
 import Data.Text.IO as TIO
 import Data.Text.Internal as TI
 import Data.Text.Internal.Lazy as TIL
@@ -40,7 +41,7 @@ data Header = Header
   }
   deriving (Show, Eq)
 
-data Note = RawNote Header
+data Note = Note Header RawNote
 
 --createNotes :: [TI.Text] -> SplitPattern -> [Note]
 --createNotes lines pattern =
@@ -54,7 +55,7 @@ getLines fileName = do
 checkLine :: [TI.Text] -> SplitPattern -> [TI.Text]
 checkLine lines pattern =
   --  Prelude.filter (\line -> line == pattern) lines
-  Prelude.filter (\line -> (isPrefixOf pattern line)) lines
+  Prelude.filter (\line -> (T.isPrefixOf pattern line)) lines
 
 -- | parseHeader splits the header into 3 sections:
 --   1. date
@@ -111,3 +112,14 @@ writeNotes dir tags content = do
         [ "tags" .= tags,
           "content" .= content
         ]
+
+-- TODO append note to tag file
+-- appendNote :: FilePath -> Note -> IO()
+-- appendNote dir note = do
+--
+
+writeBlankNote :: FilePath -> T.Text -> IO ()
+writeBlankNote dir tag = do
+  let fn =  T.unpack (mconcat [tag, ".html"])
+      content =  mconcat ["<h1>", tag, "</h1>"]
+    in TIO.writeFile (joinPath [dir, "public/static/notes/", fn]) content

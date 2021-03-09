@@ -31,9 +31,10 @@ main = do
   fileLines <- getLines fileName
   let headers = Prelude.map parseHeader (checkLine fileLines pattern)
   let sortedUnique = getUniqueTags headers
+  mapM (writeBlankNote dir) sortedUnique
 
-  print headers
-  print "---"
+  -- print headers
+  -- print "---"
   print sortedUnique
 
   writeNotes dir sortedUnique html
