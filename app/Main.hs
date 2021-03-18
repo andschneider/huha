@@ -2,15 +2,10 @@
 
 module Main where
 
-import Data.Aeson
-import Data.List (nub, sort)
 import qualified Data.Text as T
-import qualified Data.Text.Lazy.IO as TIO
 import Notes
 import Parser
 import System.FilePath (joinPath)
-import Text.Megaparsec
-import Text.Mustache
 
 main :: IO ()
 main = do
