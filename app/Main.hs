@@ -31,20 +31,21 @@ main = do
   fileLines <- getLines fileName
   let headers = Prelude.map parseHeader (filterLines fileLines pattern)
   let sortedUnique = getUniqueTags headers
-  mapM (writeBlankNote dir) sortedUnique
+  mapM_ (writeBlankNote dir) sortedUnique
 
   -- print headers
   -- print "---"
-  print sortedUnique
+  -- print sortedUnique
 
   -- TODO kinda janky. better way to ignore until first pattern match?
   let removeFirstTwo = tail (tail fileLines)
   let test = extractUntil (\x -> not $ T.isPrefixOf "------" x) removeFirstTwo
-  print test
+  -- print test
 
   -- TODO combine these
   let yeet = createNotes removeFirstTwo "------"
-  print yeet
+  -- print yeet
 
-  mapM (appendNote dir) yeet
+  -- TODO print out which files are being written
+  mapM_ (appendNote dir) yeet
   writeNotes dir sortedUnique html

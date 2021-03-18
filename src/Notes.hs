@@ -18,17 +18,17 @@ module Notes
   )
 where
 
-import Data.Aeson
+import Data.Aeson ( object, KeyValue((.=)) )
 import Data.List (groupBy, nub, sort)
 import qualified Data.Text as T
-import Data.Text.IO as TIO
-import Data.Text.Internal as TI
-import Data.Text.Internal.Lazy as TIL
+import Data.Text.IO as TIO ( putStrLn, readFile, writeFile )
+import Data.Text.Internal as TI ( Text )
+import Data.Text.Internal.Lazy as TIL ( Text )
 import qualified Data.Text.Lazy.IO as TLIO
-import Parser
+import Parser ( convertLines, convertFile )
 import System.FilePath (joinPath)
-import Text.Megaparsec
-import Text.Mustache
+import Text.Megaparsec ()
+import Text.Mustache ( compileMustacheDir, renderMustache )
 
 type SplitPattern = TI.Text
 
@@ -123,9 +123,9 @@ getUniqueTags headers =
 -- | write all of the tags and converted markdown to a html file
 writeNotes :: FilePath -> [T.Text] -> TIL.Text -> IO ()
 writeNotes dir tags content = do
-  template <- compileMustacheDir "tags" $ joinPath [dir, "layouts"]
+  template <- compileMustacheDir "main" $ joinPath [dir, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "public/static/", "tags.html"])
+    (joinPath [dir, "public/static/", "index.html"])
     $ renderMustache template $
       object
         [ "tags" .= tags,
@@ -136,18 +136,27 @@ writeNotes dir tags content = do
 appendNote :: FilePath -> Note -> IO ()
 appendNote dir n = do
   html <- convertLines (note n)
-  let fn = T.unpack (mconcat [(tags (header n) !! 0), ".html"])  -- TODO only using the first tag, should be all of them
-      render = convertFile html
-   in TLIO.appendFile (joinPath [dir, "public/static/notes/", fn]) render
+  let render = convertFile html
+    -- map over all the tags in a note, duplicating the note if it has more than one tag
+    in mapM_ (appendNote' dir render) (tags (header n))
+
+-- | recursive helper to append note to a html file
+appendNote' :: FilePath -> TIL.Text -> T.Text -> IO ()
+appendNote' dir content t = do
+  let fn = T.unpack (mconcat [t, ".html"])
+   in TLIO.appendFile (joinPath [dir, "public/static/notes/", fn]) content
 
 -- | create a blank html file based on the name of a tag.
 --  the file should be appended to later with actual content.
 writeBlankNote :: FilePath -> T.Text -> IO ()
 writeBlankNote dir tag = do
   let fn = T.unpack (mconcat [tag, ".html"])
-      content = mconcat ["<h1>", tag, "</h1>", "\n", "\n"]
-   in TIO.writeFile (joinPath [dir, "public/static/notes/", fn]) content
--- TODO is this the right save location?
+  template <- compileMustacheDir "category" $ joinPath [dir, "layouts"]
+  TLIO.writeFile
+    (joinPath [dir, "public/static/notes", fn])
+    $ renderMustache template $
+      object
+        [ "tag" .= tag ]
 
 printLines :: [TI.Text] -> IO ()
 printLines lines = do
