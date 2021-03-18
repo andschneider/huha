@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Tags</title>
+    <title>Notes</title>
+	<link rel='stylesheet' href='/static/css/main.css' />
 </head>
 <body>
-<div class="tags">
-    <article>
-        {{#tags}}
-        <a href="/notes/{{.}}.html">{{.}}</a>
-        {{/tags}}
-    </article>
-    {{& content}}
-</div>
+<article>
+    <main>
+        <div id="row">
+            <div id="tags">
+                <ul>
+                    {{#tags}}
+                    <li><a href="/notes/{{.}}.html">{{.}}</a></li>
+                    {{/tags}}
+                </ul>
+            </div>
+            <div id="notes">
+               {{& content}}
+            </div>
+        </div>
+    </main>
+</article>
 </body>
 </html>
