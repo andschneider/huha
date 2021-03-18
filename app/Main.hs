@@ -2,15 +2,10 @@
 
 module Main where
 
-import Data.Aeson
-import Data.List (nub, sort)
 import qualified Data.Text as T
-import qualified Data.Text.Lazy.IO as TIO
 import Notes
 import Parser
 import System.FilePath (joinPath)
-import Text.Megaparsec
-import Text.Mustache
 
 main :: IO ()
 main = do
@@ -25,18 +20,27 @@ main = do
 
   raw <- getFile fileName
   let html = convertFile raw
-  --  print html
+--    print html
 
   -- TODO merge into one function?
-  ls <- getLines fileName
-  let headers = checkLine ls pattern
-  let tags = Prelude.map parseHeader headers -- TODO parse full header
-  let parsedTags = Prelude.map parseTags tags
-  let sortedUnique = sort (nub (Prelude.concat parsedTags))
+  fileLines <- getLines fileName
+  let headers = Prelude.map parseHeader (filterLines fileLines pattern)
+  let sortedUnique = getUniqueTags headers
+  mapM_ (writeBlankNote dir) sortedUnique
 
-  --  printLines headers
-  --  print tags
-  --  printLines tags
-  --  mapM_ printLines parsedTags
+  -- print headers
+  -- print "---"
+  -- print sortedUnique
 
+  -- TODO kinda janky. better way to ignore until first pattern match?
+  let removeFirstTwo = tail (tail fileLines)
+  let test = extractUntil (\x -> not $ T.isPrefixOf "------" x) removeFirstTwo
+  -- print test
+
+  -- TODO combine these
+  let yeet = createNotes removeFirstTwo "------"
+  -- print yeet
+
+  -- TODO print out which files are being written
+  mapM_ (appendNote dir) yeet
   writeNotes dir sortedUnique html

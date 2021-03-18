@@ -16,7 +16,6 @@ The directory structure that huha expects as input is the following:
 .
 ├── content
 ├── layouts
-├── public
 └── static
 ```
 
@@ -29,14 +28,19 @@ This is where the markdown files should be.
 
 ### layouts
 
-The [{{ mustache }}](https://mustache.github.io/) template files that are used
-to generate the HTML.
+The [mustache](https://mustache.github.io/) template files that are used
+to define the structure of and generate the HTML.
 
-### public
+As of now, there are two template files that should be defined:
 
-The generated site is built here. The whole directory, i.e. `public/`, should
-be exposed to a web server.
+- `main.mustache` - this is the base template that will become the `index.html`
+- `category.mustache` - this template is used for individual pages
 
 ### static
 
 Things like CSS, JS, and images.
+
+## output
+
+The generated site will be created in a `public` directory. The whole directory,
+i.e. `public/`, should be exposed by a web server.
