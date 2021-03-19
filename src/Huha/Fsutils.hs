@@ -6,7 +6,7 @@
 -- Directory, FilePath, Prelude, etc. Some of these may overlap with MissingH
 -- but the versions here will probably be more simplistic. Furthermore, this
 -- library is focused on this one thing and not a whole bunch of things.
-module Fsutils
+module Huha.Fsutils
        ( mtreeList
        , fileList
        , walkDir

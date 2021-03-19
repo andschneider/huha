@@ -1,4 +1,6 @@
-module Build
+{-# LANGUAGE OverloadedStrings #-}
+
+module Huha.Build
   ( prepareBuild,
     runBuild,
     createConfig,
@@ -8,9 +10,9 @@ where
 
 import qualified Data.Text as T
 import Data.Text.Internal as TI (Text)
-import Fsutils
-import Notes
-import Parser
+import Huha.Fsutils
+import Huha.Notes
+import Huha.Parser
 import System.Directory (createDirectoryIfMissing)
 import System.FilePath (joinPath)
 
@@ -35,13 +37,13 @@ data Config = Config
 createConfig :: BaseDir -> InputFile -> OutputLocation -> TI.Text -> TI.Text -> Config
 createConfig d i o hp sp =
   let notes = joinPath [d, "content", i]
-    in Config {baseDir = d, noteFile = notes, outputDir = o, headerPattern = hp, splitPattern = sp}
+   in Config {baseDir = d, noteFile = notes, outputDir = o, headerPattern = hp, splitPattern = sp}
 
 -- | Create the output folders for static assets and the notes files.
 prepareBuild :: Config -> IO ()
 prepareBuild config = do
   let static = joinPath [outputDir config, "public/static"]
-  let notesDir = joinPath [outputDir config, "public/notes"]
+      notesDir = joinPath [outputDir config, "public/notes"]
    in mapM_ (createDirectoryIfMissing True) [notesDir, static]
 
 -- | Run the full build, creating an index file and all the note files.
@@ -57,7 +59,7 @@ runBuild config = do
   buildNotes config fileLines -- append notes to their files
 
 -- | Create the index.html file at "outputDir/public/index.html".
-buildIndex :: Config -> [T.Text] -> Notes.Tags -> IO ()
+buildIndex :: Config -> [T.Text] -> Huha.Notes.Tags -> IO ()
 buildIndex config lines tags = do
   parsed <- convertLines lines
   let html = convertFile parsed -- deal with the Either monad

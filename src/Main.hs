@@ -4,7 +4,7 @@ module Main where
 
 import Options.Applicative
 import Data.Semigroup ((<>))
-import Build
+import Huha.Build
 import Data.Text.Internal as TI (Text)
 
 data Options = Options
@@ -60,7 +60,7 @@ separator = strOption
 --verbose = switch ( long "verbose" <> short 'v' <> help "Display build information" )
 
 dryRun :: Parser Bool
-dryRun = switch ( long "dry" <> help "Dry run the build. The output directory structure still be created (if needed)." )
+dryRun = switch ( long "dry" <> help "Dry run the build. The output directory structure will still be created (if needed)." )
 
 combined :: Parser Options
 combined = Options <$> input <*> output <*> filename <*> headerPattern <*> separator <*> dryRun
@@ -75,15 +75,6 @@ opts = info (combined <**> helper)
 main :: IO ()
 main = do
   options <- execParser opts
---  let i = optInput options
---  let input = "./example"
---  let o = optInput options
---  let out = "./output2"
---  let fileName = "notes-cs.md"
-  --  let fileName = "/Users/andrew/akb-1/notes-cs.md"
---  let headerPattern = "## 20"
---  let splitPattern = "------"
-
   let config = createConfig
               (optInput options)
               (optFile options)
@@ -93,5 +84,5 @@ main = do
 
   prepareBuild config
   if optDryRun options
-     then putStrLn "nope"
+     then putStrLn "dry run - nothing built"
   else runBuild config

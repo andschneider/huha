@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Notes
+module Huha.Notes
   ( getLines,
     filterLines,
     parseHeader,
@@ -25,7 +25,7 @@ import Data.Text.IO as TIO ( readFile )
 import Data.Text.Internal as TI ( Text )
 import Data.Text.Internal.Lazy as TIL ( Text )
 import qualified Data.Text.Lazy.IO as TLIO
-import Parser ( convertLines, convertFile )
+import Huha.Parser ( convertLines, convertFile )
 import System.FilePath (joinPath)
 import Text.Megaparsec ()
 import Text.Mustache ( compileMustacheDir, renderMustache )
@@ -36,7 +36,7 @@ type Tags = [T.Text]
 
 type RawNote = [T.Text]
 
-data Header = Header { 
+data Header = Header {
       rawHeader :: T.Text
     , date :: TI.Text
     , tags :: Tags
@@ -117,7 +117,7 @@ parseTags t =
 -- | Extract all unique tags from a list of headers.
 getUniqueTags :: [Header] -> Tags
 getUniqueTags headers =
-  let tagsOnly = Prelude.map Notes.tags headers
+  let tagsOnly = Prelude.map Huha.Notes.tags headers
       allTags = Prelude.concat tagsOnly
    in sort (nub allTags)
 

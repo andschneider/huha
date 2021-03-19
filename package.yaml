@@ -1,5 +1,5 @@
 name:                huha
-version:             0.0.3
+version:             0.0.4
 github:              "andschneider/huha"
 license:             MIT
 author:              "Andrew Schneider"
@@ -38,7 +38,7 @@ library:
 executables:
   huha:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         src
     ghc-options:
     - -threaded
     - -rtsopts
