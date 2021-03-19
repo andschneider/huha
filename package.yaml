@@ -30,12 +30,13 @@ dependencies:
 - stache
 - aeson
 - megaparsec
+- optparse-applicative
 
 library:
   source-dirs: src
 
 executables:
-  huha-exe:
+  huha:
     main:                Main.hs
     source-dirs:         app
     ghc-options:

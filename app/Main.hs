@@ -2,24 +2,96 @@
 
 module Main where
 
+import Options.Applicative
+import Data.Semigroup ((<>))
 import Build
+import Data.Text.Internal as TI (Text)
+
+data Options = Options
+  { optInput :: String
+  , optOutput :: String
+  , optFile :: String
+  , optHeader :: TI.Text
+  , optSeparator :: TI.Text
+  , optDryRun :: Bool }
+
+input :: Parser String
+input = strOption
+  (  long "input"
+  <> short 'i'
+  <> showDefault
+  <> value "."
+  <> help "Input directory to build"
+  <> metavar "PATH")
+
+output :: Parser String
+output = strOption
+  (  long "output"
+  <> short 'o'
+  <> showDefault
+  <> value "."
+  <> help "Location to create a 'public' directory and build site to"
+  <> metavar "PATH")
+
+filename :: Parser String
+filename = strOption
+  (  long "file"
+  <> short 'f'
+  <> help "Filename of markdown file. It should be in the 'content' directory."
+  <> metavar "FILE")
+
+headerPattern :: Parser TI.Text
+headerPattern = strOption
+  (  long "header"
+  <> short 'h'
+  <> showDefault
+  <> value "## 2"
+  <> help "Header pattern to use in searching the begning of lines for headers." )
+
+separator :: Parser TI.Text
+separator = strOption
+  (  long "separator"
+  <> short 's'
+  <> showDefault
+  <> value "------"
+  <> help "Separator pattern to use to split up the file." )
+
+--verbose :: Parser Bool
+--verbose = switch ( long "verbose" <> short 'v' <> help "Display build information" )
+
+dryRun :: Parser Bool
+dryRun = switch ( long "dry" <> help "Dry run the build. The output directory structure still be created (if needed)." )
+
+combined :: Parser Options
+combined = Options <$> input <*> output <*> filename <*> headerPattern <*> separator <*> dryRun
+
+opts :: ParserInfo Options
+opts = info (combined <**> helper)
+  ( fullDesc
+  <> progDesc "Build a static site from a single file." -- TODO
+  <> header "huha - static site generator")
+
 
 main :: IO ()
 main = do
-  -- TODO specific these as CLI inputs
-  let input = "./example"
-  let output = "./output2"
-  let fileName = "notes-cs.md"
+  options <- execParser opts
+--  let i = optInput options
+--  let input = "./example"
+--  let o = optInput options
+--  let out = "./output2"
+--  let fileName = "notes-cs.md"
   --  let fileName = "/Users/andrew/akb-1/notes-cs.md"
-  let headerPattern = "## 20"
-  let splitPattern = "------"
+--  let headerPattern = "## 20"
+--  let splitPattern = "------"
 
-  -- CONFIG:
-  -- 1. notes files
-  -- 2. output base directory
-  -- 3. header pattern
-  -- 4. split pattern
+  let config = createConfig
+              (optInput options)
+              (optFile options)
+              (optOutput options)
+              (optHeader options)
+              (optSeparator options)
 
-  let config = createConfig input fileName output headerPattern splitPattern
   prepareBuild config
-  runBuild config
+  if optDryRun options
+     then putStrLn "nope"
+  else runBuild config

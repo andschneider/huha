@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4da465f848e06bbb3a1dded16d18ee9ddec1ea26c48ba9a7126eeae498b9a8e2
+-- hash: 3da28f9746f3aa5c051150d53daca489ebba376d3dafa9917c87fa2218979eb4
 
 name:           huha
 version:        0.0.3
@@ -46,11 +46,12 @@ library
     , filepath
     , hspec
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010
 
-executable huha-exe
+executable huha
   main-is: Main.hs
   other-modules:
       Paths_huha
@@ -67,6 +68,7 @@ executable huha-exe
     , hspec
     , huha
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010
@@ -91,6 +93,7 @@ test-suite huha-test
     , hspec
     , huha
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010

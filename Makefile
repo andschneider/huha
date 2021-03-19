@@ -1,9 +1,14 @@
+.PHONY: build
 build:
-	stack build
+	stack build --copy-bins --local-bin-path ./build
 
 BIN=huha
 run:
-	@stack exec $(BIN)-exe
+	@stack exec $(BIN)
+
+.PHONY: clean
+clean:
+	rm ./build/huha
 
 ########################################
 #               Cabal                  #
