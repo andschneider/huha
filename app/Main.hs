@@ -2,45 +2,24 @@
 
 module Main where
 
-import qualified Data.Text as T
-import Notes
-import Parser
-import System.FilePath (joinPath)
+import Build
 
 main :: IO ()
 main = do
-  --  putStrLn "Enter the directory name: "
-  --  dir <- getLine
-  let dir = "./example"
-  let content = joinPath [dir, "content/"]
+  -- TODO specific these as CLI inputs
+  let input = "./example"
+  let output = "./output2"
+  let fileName = "notes-cs.md"
+  --  let fileName = "/Users/andrew/akb-1/notes-cs.md"
+  let headerPattern = "## 20"
+  let splitPattern = "------"
 
-  let fileName = joinPath [content, "notes-cs.md"]
-  let pattern = "##"
-  --  let pattern = "------"
+  -- CONFIG:
+  -- 1. notes files
+  -- 2. output base directory
+  -- 3. header pattern
+  -- 4. split pattern
 
-  raw <- getFile fileName
-  let html = convertFile raw
---    print html
-
-  -- TODO merge into one function?
-  fileLines <- getLines fileName
-  let headers = Prelude.map parseHeader (filterLines fileLines pattern)
-  let sortedUnique = getUniqueTags headers
-  mapM_ (writeBlankNote dir) sortedUnique
-
-  -- print headers
-  -- print "---"
-  -- print sortedUnique
-
-  -- TODO kinda janky. better way to ignore until first pattern match?
-  let removeFirstTwo = tail (tail fileLines)
-  let test = extractUntil (\x -> not $ T.isPrefixOf "------" x) removeFirstTwo
-  -- print test
-
-  -- TODO combine these
-  let yeet = createNotes removeFirstTwo "------"
-  -- print yeet
-
-  -- TODO print out which files are being written
-  mapM_ (appendNote dir) yeet
-  writeNotes dir sortedUnique html
+  let config = createConfig input fileName output headerPattern splitPattern
+  prepareBuild config
+  runBuild config

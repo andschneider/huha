@@ -9,6 +9,7 @@ module Notes
     getUniqueTags,
     writeBlankNote,
     Header,
+    Tags,
     tags,
     note,
     extractUntil,
@@ -122,11 +123,11 @@ getUniqueTags headers =
 
 -- | Write all of the tags and converted markdown to a file. This html file
 --   becomes the base of the static site, as such, it is saved to "index.html".
-writeNotes :: FilePath -> Tags -> TIL.Text -> IO ()
-writeNotes dir t content = do
-  template <- compileMustacheDir "main" $ joinPath [dir, "layouts"]
+writeNotes :: FilePath -> FilePath -> Tags -> TIL.Text -> IO ()
+writeNotes input output t content = do
+  template <- compileMustacheDir "main" $ joinPath [input, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "public/", "index.html"])
+    (joinPath [output, "public/", "index.html"])
     $ renderMustache template $
       object
         [ "tags" .= t,
@@ -150,12 +151,12 @@ appendNote' dir content t = do
 
 -- | Create a blank html file based on the name of a tag. The file should be
 -- appended to later with actual content.
-writeBlankNote :: FilePath -> T.Text -> IO ()
-writeBlankNote dir tag = do
+writeBlankNote :: FilePath -> FilePath -> T.Text -> IO ()
+writeBlankNote input output tag = do
   let fn = T.unpack (mconcat [tag, ".html"])
-  template <- compileMustacheDir "category" $ joinPath [dir, "layouts"]
+  template <- compileMustacheDir "category" $ joinPath [input, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "public/notes", fn]) -- TODO create this directory if it doesn't exist
+    (joinPath [output, "public/notes", fn])
     $ renderMustache template $
       object
         [ "tag" .= tag ]

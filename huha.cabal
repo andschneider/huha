@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6045adf6d6e8df4870bf31080567c427485c16a55655d22c5198d69775cd2958
+-- hash: 4da465f848e06bbb3a1dded16d18ee9ddec1ea26c48ba9a7126eeae498b9a8e2
 
 name:           huha
 version:        0.0.3
@@ -29,6 +29,8 @@ source-repository head
 
 library
   exposed-modules:
+      Build
+      Fsutils
       Notes
       Parser
   other-modules:
