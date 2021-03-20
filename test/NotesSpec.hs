@@ -2,7 +2,7 @@
 
 module NotesSpec (notesSpec) where
 
-import Notes 
+import Huha.Notes 
 import Test.Hspec
 
 notesSpec :: Spec

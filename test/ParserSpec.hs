@@ -1,6 +1,6 @@
 module ParserSpec (spec) where
 
-import Parser
+import Huha.Parser
 import Test.Hspec
 
 
