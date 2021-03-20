@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Parser
+module Huha.Parser
   ( convertFile,
     convertLines,
     getFile,

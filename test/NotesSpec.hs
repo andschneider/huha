@@ -2,15 +2,15 @@
 
 module NotesSpec (notesSpec) where
 
-import Notes
+import Huha.Notes 
 import Test.Hspec
-import Notes (Header)
 
 notesSpec :: Spec
 notesSpec = describe "notes parsing" $ do
   let pattern = "## "
   let headerLine = "## 20201104 - [[linux]] [[test]] - man page sections"
   let tags = parseTags headerLine
+  -- TODO
 --  let parsedHeader = Header {rawHeader = headerLine, date = "20201104", tags = tags, title = "man page sections"}
   let parsedHeader = parseHeader headerLine
 

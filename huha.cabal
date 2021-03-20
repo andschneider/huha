@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6045adf6d6e8df4870bf31080567c427485c16a55655d22c5198d69775cd2958
+-- hash: ada916148171bab59e3a4322d01e11504499104cc30260ab5e277589cac5d940
 
 name:           huha
-version:        0.0.3
+version:        0.0.4
 synopsis:       A bare bones static site generator
 description:    Please see the README on GitHub at <https://github.com/andschneider/huha#readme>
 category:       Web
@@ -29,8 +29,11 @@ source-repository head
 
 library
   exposed-modules:
-      Notes
-      Parser
+      Huha.Build
+      Huha.Fsutils
+      Huha.Notes
+      Huha.Parser
+      Main
   other-modules:
       Paths_huha
   hs-source-dirs:
@@ -44,16 +47,21 @@ library
     , filepath
     , hspec
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010
 
-executable huha-exe
+executable huha
   main-is: Main.hs
   other-modules:
+      Huha.Build
+      Huha.Fsutils
+      Huha.Notes
+      Huha.Parser
       Paths_huha
   hs-source-dirs:
-      app
+      src
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -XOverloadedStrings
   build-depends:
       aeson
@@ -65,6 +73,7 @@ executable huha-exe
     , hspec
     , huha
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010
@@ -89,6 +98,7 @@ test-suite huha-test
     , hspec
     , huha
     , megaparsec
+    , optparse-applicative
     , stache
     , text
   default-language: Haskell2010

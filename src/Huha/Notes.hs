@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Notes
+module Huha.Notes
   ( getLines,
     filterLines,
     parseHeader,
@@ -9,6 +9,7 @@ module Notes
     getUniqueTags,
     writeBlankNote,
     Header,
+    Tags,
     tags,
     note,
     extractUntil,
@@ -24,7 +25,7 @@ import Data.Text.IO as TIO ( readFile )
 import Data.Text.Internal as TI ( Text )
 import Data.Text.Internal.Lazy as TIL ( Text )
 import qualified Data.Text.Lazy.IO as TLIO
-import Parser ( convertLines, convertFile )
+import Huha.Parser ( convertLines, convertFile )
 import System.FilePath (joinPath)
 import Text.Megaparsec ()
 import Text.Mustache ( compileMustacheDir, renderMustache )
@@ -35,7 +36,7 @@ type Tags = [T.Text]
 
 type RawNote = [T.Text]
 
-data Header = Header { 
+data Header = Header {
       rawHeader :: T.Text
     , date :: TI.Text
     , tags :: Tags
@@ -116,17 +117,17 @@ parseTags t =
 -- | Extract all unique tags from a list of headers.
 getUniqueTags :: [Header] -> Tags
 getUniqueTags headers =
-  let tagsOnly = Prelude.map Notes.tags headers
+  let tagsOnly = Prelude.map Huha.Notes.tags headers
       allTags = Prelude.concat tagsOnly
    in sort (nub allTags)
 
 -- | Write all of the tags and converted markdown to a file. This html file
 --   becomes the base of the static site, as such, it is saved to "index.html".
-writeNotes :: FilePath -> Tags -> TIL.Text -> IO ()
-writeNotes dir t content = do
-  template <- compileMustacheDir "main" $ joinPath [dir, "layouts"]
+writeNotes :: FilePath -> FilePath -> Tags -> TIL.Text -> IO ()
+writeNotes input output t content = do
+  template <- compileMustacheDir "main" $ joinPath [input, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "public/", "index.html"])
+    (joinPath [output, "public/", "index.html"])
     $ renderMustache template $
       object
         [ "tags" .= t,
@@ -150,12 +151,12 @@ appendNote' dir content t = do
 
 -- | Create a blank html file based on the name of a tag. The file should be
 -- appended to later with actual content.
-writeBlankNote :: FilePath -> T.Text -> IO ()
-writeBlankNote dir tag = do
+writeBlankNote :: FilePath -> FilePath -> T.Text -> IO ()
+writeBlankNote input output tag = do
   let fn = T.unpack (mconcat [tag, ".html"])
-  template <- compileMustacheDir "category" $ joinPath [dir, "layouts"]
+  template <- compileMustacheDir "category" $ joinPath [input, "layouts"]
   TLIO.writeFile
-    (joinPath [dir, "public/notes", fn]) -- TODO create this directory if it doesn't exist
+    (joinPath [output, "public/notes", fn])
     $ renderMustache template $
       object
         [ "tag" .= tag ]

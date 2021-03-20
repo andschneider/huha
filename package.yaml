@@ -1,5 +1,5 @@
 name:                huha
-version:             0.0.3
+version:             0.0.4
 github:              "andschneider/huha"
 license:             MIT
 author:              "Andrew Schneider"
@@ -30,14 +30,15 @@ dependencies:
 - stache
 - aeson
 - megaparsec
+- optparse-applicative
 
 library:
   source-dirs: src
 
 executables:
-  huha-exe:
+  huha:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         src
     ghc-options:
     - -threaded
     - -rtsopts
