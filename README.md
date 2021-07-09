@@ -4,10 +4,10 @@ A bare bones static site generator written in Haskell.
 
 ## about
 
-This project is an attempt to create a minimal static site generator, meaning
-transforming markdown files into html files to be viewed in your browser. The
-motivation behind this was to give me an easy and custom way to create a
-website.
+This project is an attempt to create a minimal static site generator. It was my
+final project for [CS
+557](https://docs.google.com/document/u/1/d/e/2PACX-1vSInB4fmdJzycdWcsuCfRqBskHboSLyHta-6itbkXIk6IBmG9DHQZlwjTu4AJbtlZ-cAskgVbWPi-HD/pub)
+at Portland State University.
 
 I've used [Hugo](https://gohugo.io/) before, which is a nice product, but it has
 a lot of options and features. I was after something simpler, and, as will be
@@ -18,19 +18,13 @@ up of `hugo` and `haskell`.
 
 ### libraries
 
-This project uses [commonmark-hs](https://github.com/jgm/commonmark-hs) to parse
-the markdown files and generate the html. There were a few libraries that I
-could have chosen, but I went with commonmark-hs because it is being actively
-developed and was written in pure Haskell. Additionally, the developer is the
-same person who wrote and maintains [pandoc](https://pandoc.org), which is a
-tool I've used many times over the years. When I realized he wrote commonmark-hs
-(and also that pandoc is written in Haskell) I felt compelled to use it.
+This project primarily uses:
 
-Another central library that is used in this project is
-[stache](https://github.com/stackbuilders/stache). This library enables quick
-and easy templating using the [mustache](https://mustache.github.io/)
-specification. I'd never heard of mustache before, but I didn't have any issues
-using the template language.
+- [commonmark-hs](https://github.com/jgm/commonmark-hs) to parse the markdown
+  files and generate the html.
+
+- [stache](https://github.com/stackbuilders/stache) for quick and easy
+  templating using the [mustache](https://mustache.github.io/) specification.
 
 With these two libraries, the flow of building a static site is as follows:
 
@@ -40,36 +34,14 @@ With these two libraries, the flow of building a static site is as follows:
 4. Inject the converted html into the template using _stache_
 5. Save to disk as a html file
 
-Overall, it is a fairly straight forward workflow. However, something I did not
-expect when I started was how strange IO felt in Haskell. Since most of the
-steps outlined above involve some sort of IO, I spent a lot of time banging my
-head against the wall with this concept. Especially when I started the project,
-and had never seen a Monad before, I was quite confused.
+Some supporting libraries I used:
 
-The `Parser.hs` file is where I started. There are some functions in there that
-I definitely think could be combined or removed, mainly around handling the
-Either type. This file handles step 2 from above, and it made me realize that
-one of the hard things about using Haskell is the seemingly lack of good
-documentation and examples. In order to use the commonmark-hs library
-effectively I ended up basically reading the GitHub and looking for examples,
-including going through all the GitHub issues, which was semi-fruitful.
+- [fsutils](https://github.com/Raynes/fsutils) for the `copyDir` function. I
+  was unable to use this library with Stack/Cabal. To get around this, I
+  vendored it into my source as the `Fsutils.hs` file.
 
-An additional library I used was the
-[fsutils](https://github.com/Raynes/fsutils) library. I only used one function,
-the `copyDir` function, but it's worth pointing out because I was unable to use
-this library with Stack/Cabal. When I tried to add it as a dependency, it threw
-a bunch of errors about the GHC version. I suppose this makes sense since the
-library hasn't been updated in 9 years. To get around this, I vendored it into
-my source as the `Fsutils.hs` file.
-
-Finally, the last major library I used was
-[optparse-applicative](https://github.com/pcapriotti/optparse-applicative). I
-threw this in at the end to create a little CLI (because I like making CLIs)
-and I actually really liked it. Especially after the 3rd homework assignment I
-felt comfortable using it and understanding it. I think it's a really powerful
-library and compares well to Python's `argparse`, which is probably my favorite
-CLI library. However, I think my experience with this library will make me pick
-up Haskell again at some point when I have a little CLI to make.
+- [optparse-applicative](https://github.com/pcapriotti/optparse-applicative).
+  For the build CLI.
 
 ### specifics
 
@@ -125,7 +97,8 @@ to build these run the following command:
 
 `./build/huha --input ./example --output ./output --file notes-cs.md`
 
-> This assumes you are building from the base of the project using the binary created by the `make build` command.
+> This assumes you are building from the base of the project using the binary
+> created by the `make build` command.
  
 > There will be no message displayed if things worked correctly.
 
@@ -140,10 +113,6 @@ For more commands, see the help text from the CLI. I added options to change the
 separator and header pattern strings, but I have a feeling that changing these
 too much might result in some crashes (the parsing is using simple string prefix
 matching, so keep that in mind).
-
-If you'd like a reference of the output I got, you can check out a hosted
-version [here](https://goofy-fermat-7b6850.netlify.app). I'll leave that up
-until at the least the end of March.
 
 For more information on what was generated, see the output section below.
 
@@ -184,8 +153,8 @@ The directory structure that huha expects as input is the following:
 └── static
 ```
 
-The layout is based on
-the [Hugo directory structure.](https://gohugo.io/getting-started/directory-structure/)
+The layout is based on the [Hugo directory
+structure.](https://gohugo.io/getting-started/directory-structure/)
 
 ### content
 
